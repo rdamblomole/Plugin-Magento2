@@ -1,0 +1,151 @@
+<?php if($this->getAmbiente() != "test"): ?>
+<script src="https://forms.todopago.com.ar/resources/TPHybridForm-v0.1.js"></script>
+<?php else: ?>
+<script src="https://developers.todopago.com.ar/resources/TPHybridForm-v0.1.js"></script>
+<?php endif; ?>
+
+<div class="contentContainer main" style="width: auto">
+<div class="alert alert-warning">
+		<h4>Advertencia:</h4>
+		<ol id="alert-form">
+		</ol>
+	</div>
+
+	<div id="tp-form-tph">
+		<div id="tp-logo"></div>
+		<div id="tp-content-form">
+			<h5>Eleg&iacute; tu forma de pago </h5>
+			
+			<div class="">
+				<select id="formaDePagoCbx" class="select-control"></select>
+			</div>	
+			
+			<div class="">
+				<select id="bancoCbx" class="select-control"></select>
+			</div>	
+			
+			<div class="">
+				<select id="promosCbx" class="select-control"></select>
+				<label id="labelPromotionTextId"></label>
+			</div>
+			
+			<div class="input-group input-group-sm">
+				<input id="numeroTarjetaTxt" class="form-control fixed-width-xl">
+			</div>
+			
+			<div class="row date-group">
+			  <div class="col-sm-1">
+				<div class="input-group-sm">
+				  <input id="mesTxt" class="left form-control">
+				</div><!-- /input-group -->
+			  </div><!-- /.col-lg-6 -->
+			  <div class="col-sm-1">
+				<div class="input-group-sm">
+				 <input id="anioTxt" class="left form-control">
+				</div><!-- /input-group -->
+			  </div><!-- /.col-lg-6 -->
+			</div><!-- /.row -->
+						
+			<div class="input-group input-group-sm">
+				<label id="labelCodSegTextId" class="tp-label"></label>
+				<input id="codigoSeguridadTxt" class="left form-control"/>
+			</div>
+			
+			<div class="input-group input-group-sm">
+				<input id="apynTxt" class="form-control"/>
+			</div>
+			
+			<div class="input-group input-group-sm">
+				<select id="tipoDocCbx" class="select-control"></select>
+			</div>
+			
+			<div class="input-group input-group-sm">
+				<input id="nroDocTxt" class="form-control"/>
+			</div>
+			
+			<div class="input-group input-group-sm">
+				<input id="emailTxt" class="form-control"/><br/>
+			</div>
+			
+			<div id="tp-bt-wrapper">
+				<button id="MY_btnConfirmarPago"/>
+				<button id="btnConfirmarPagoValida" class="tp-button button btn-sm btn btn-success">Pagar</button>
+			</div>
+		</div>	
+	</div>
+
+	</div>
+
+	<script>
+
+			jQuery("#formaDePagoCbx").change(function () {
+				if(this.value == 500 || this.value == 501){
+					jQuery(".spacer").hide();
+				}else{
+					jQuery(".spacer").show();
+				}
+			});
+			jQuery(".alert").hide();
+			
+			jQuery("#btnConfirmarPagoValida").on("click", function(){
+				jQuery('#alert-form').empty();
+				jQuery('.alert-warning').hide();
+				jQuery('#MY_btnConfirmarPago').click();
+			});
+
+		
+		var security = "<?php echo $this->getRequestKey(); ?>";
+		//merchandID
+		var merchantId = "<?php echo $this->getMerchant(); ?>";
+		//monto del pago
+		var numericAmount = "<?php echo $this->getAmount(); ?>";
+		var mail = "<?php echo $this->getMail(); ?>";
+		var CompleteName = "<?php echo $this->getNombre(); ?>";
+		
+
+		/************* CONFIGURACION DEL API ************************/
+		window.TPFORMAPI.hybridForm.initForm({
+			callbackValidationErrorFunction: 'validationCollector',
+			callbackBilleteraFunction: 'billeteraPaymentResponse',
+			modalCssClass: 'modal-class',
+			modalContentCssClass: 'modal-content',
+			beforeRequest: 'initLoading',
+			afterRequest: 'stopLoading',
+			callbackCustomSuccessFunction: 'customPaymentSuccessResponse',
+			callbackCustomErrorFunction: 'customPaymentErrorResponse',
+			botonPagarId: 'MY_btnConfirmarPago',
+			codigoSeguridadTxt: 'Codigo',
+		});
+		
+		window.TPFORMAPI.hybridForm.setItem({
+			publicKey: security,
+			merchantId: merchantId,
+			defaultNombreApellido: CompleteName,
+			defaultMail: mail,
+			numericAmount: numericAmount
+		});
+
+		function validationCollector(parametros) {
+			var errorMessage = "<li>"+parametros.error+"</li>";
+			jQuery(".alert").show();	
+			jQuery("#alert-form").append(errorMessage);	
+			console.log(parametros.field + " ==> " + parametros.error);
+		}
+		function billeteraPaymentResponse(response) {
+			console.log("My wallet callback");
+			console.log(response.ResultCode + " : " + response.ResultMessage);
+		}
+		function customPaymentSuccessResponse(response) {
+			window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?Answer="+response.AuthorizationKey;
+		}
+		function customPaymentErrorResponse(response) {
+			window.top.location = "<?php echo $block->getBaseUrl().'checkout/onepage/failure'; ?>";
+		}
+		function initLoading() {
+			console.log('Cargando');
+		}
+		function stopLoading() {
+			console.log('Stop loading...');
+		}
+
+</script>
