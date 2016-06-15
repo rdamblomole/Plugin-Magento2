@@ -1,5 +1,5 @@
 <a name="inicio"></a>
-plugin-magento
+Magento 2 - Módulo Todo Pago
 ============
 
 Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
@@ -19,17 +19,30 @@ La versión de este plug in esta testeada en PHP 5.4 en adelante y MAGENTO 2
 
 <a name="instalacion"></a>
 ## Instalación
-1. Descomprimir el archivo magento2-plugin-master.zip. 
-2. Copiar todo su contenido en la carpeta `app/code`
-3. Ejecutar los siguientes comandos de configuración de Magento desde la consola
+
+**Usando Composer**
+
+```
+composer require todopago/magento2-plugin
+```
+
+**Manualmente**
+
+A.  Descomprimir el archivo magento2-plugin-master.zip. 
+
+B. Copiar todo su contenido en la carpeta `app/code/Primsa/TodoPago`
+
+Luego,
+
+1. Ejecutar los siguientes comandos de configuración de Magento desde la consola
 ```
 php bin/magento module:enable Prisma_TodoPago
 php bin/magento setup:upgrade
 php bin/magento setup:di:compile
 php bin/magento setup:static-content:deploy es_AR #idioma instalado de la tienda.
 ```
-4.	Refrescar el cache de Magento desde 'System -> Cache Management'
-4.	Luego ir a 'Stores -> Configuration -> Payment Methods' y configurar desde la pestaña de <strong>Todo Pago</strong>.
+2.	Refrescar el cache de Magento desde 'System -> Cache Management'
+3.	Luego ir a 'Stores -> Configuration -> Payment Methods' y configurar desde la pestaña de <strong>Todo Pago</strong>.
 
 Observaci&oacute;n:
 Descomentar: <em>extension=php_curl.dll</em>, <em>extension=php_soap.dll</em> y <em>extension=php_openssl.dll</em> del php.ini, ya que para la conexión al gateway se utiliza la clase <em>SoapClient</em> del API de PHP.
