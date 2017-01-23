@@ -9,21 +9,31 @@
     <system>
         <section id="payment">
             <group id="todopago" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>TodoPago v1.0.0</label>
+                <label>TodoPago v1.2.1</label>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Activo</label>
 					<comment>Activa y desactiva el módulo de pago</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="vertical_cs" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="vertical_cs" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Segmento del comercio</label>
 					<comment>La elección del segmento determina los tipos de datos a enviar</comment>
                     <source_model>Prisma\TodoPago\Model\Config\Source\ControlFraude\Vertical</source_model>
                 </field>
-                <field id="hibrido" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="hibrido" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Formulario Hibrido</label>
 					<comment>Activa y desactiva el formulario de pago insite</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="cuotas_enable" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Activar máximo de cuotas</label>
+                    <comment>Activa o desactiva limitar el máximo de cuotas a mistrar en el formulario de pago</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="cuotas_cant" translate="label" type="select" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Máximo de cuotas</label>
+                    <comment>Número máximo de cuotas a mistrar en el formulario de pago</comment>
+                     <source_model>Prisma\TodoPago\Model\Config\Source\Cuotas</source_model>
                 </field>
 				<field id="ambiente" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Ambiente</label>

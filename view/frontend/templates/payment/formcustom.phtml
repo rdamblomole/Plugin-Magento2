@@ -68,6 +68,7 @@
 			</div>
 			
 			<div id="tp-bt-wrapper">
+				<button id="btnPagoBilletera" class="tp-button button btn-sm btn btn-success">Pagar con Billetera</button>
 				<button id="MY_btnConfirmarPago"/>
 				<button id="btnConfirmarPagoValida" class="tp-button button btn-sm btn btn-success">Pagar</button>
 			</div>
@@ -114,6 +115,7 @@
 			callbackCustomSuccessFunction: 'customPaymentSuccessResponse',
 			callbackCustomErrorFunction: 'customPaymentErrorResponse',
 			botonPagarId: 'MY_btnConfirmarPago',
+                        botonPagarConBilleteraId: 'btnPagoBilletera',
 			codigoSeguridadTxt: 'Codigo',
 		});
 		
@@ -132,8 +134,10 @@
 			console.log(parametros.field + " ==> " + parametros.error);
 		}
 		function billeteraPaymentResponse(response) {
-			console.log("My wallet callback");
-			console.log(response.ResultCode + " : " + response.ResultMessage);
+			if(response.AuthorizationKey != "")
+				window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?Answer="+response.AuthorizationKey;
+			else
+				window.top.location = "<?php echo $block->getBaseUrl().'checkout/onepage/failure'; ?>";
 		}
 		function customPaymentSuccessResponse(response) {
 			window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?Answer="+response.AuthorizationKey;

@@ -68,7 +68,7 @@ function (
 
 					var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
 					jQuery('body').append("<div id='overlay'></div>");
-1					jQuery('#overlay').css({'height':height+'px'});
+					jQuery('#overlay').css({'height': height+'px'});
 					jQuery('#overlay').append("<div id='lightbox'></div>");
 					jQuery('#lightbox').append('<iframe width="100%" height="100%" src="'+data.url+'"></iframe>');
 					jQuery(".loading-mask").css({"display":"none"});

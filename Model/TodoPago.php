@@ -158,13 +158,9 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
         // CS Common
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - GetDataControlFraudeCommon");
 		$payDataOperacion = array();
-        $payDataOperacion ['CSBTCITY'] = $billingAddress->getCity();
+                $payDataOperacion ['CSBTCITY'] = $billingAddress->getCity();
 		$payDataOperacion ['CSBTCOUNTRY'] = $billingAddress->getCountryId();
-		$payDataOperacion ['CSBTCUSTOMERID'] = $customer->getId();
 		$payDataOperacion ['CSBTIPADDRESS'] = $this->getIp();
-		$payDataOperacion ['CSBTEMAIL'] = $customer->getEmail();
-		$payDataOperacion ['CSBTFIRSTNAME'] = $customer->getFirstname();
-		$payDataOperacion ['CSBTLASTNAME'] = $customer->getLastname();
 		$payDataOperacion ['CSBTPOSTALCODE'] = $billingAddress->getPostcode();
 		$payDataOperacion ['CSBTPHONENUMBER'] = $billingAddress->getTelephone();
 		$payDataOperacion ['CSBTSTATE'] =  substr($billingAddress->getRegion(),0,1);
@@ -177,13 +173,23 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		if($this->_order->getCustomerIsGuest()){
 			$payDataOperacion ['CSMDD8'] = "Y";
 			$payDataOperacion ['CSMDD7'] = 1;
+
+		        $payDataOperacion ['CSBTEMAIL'] = $billingAddress->getEmail();
+		        $payDataOperacion ['CSBTFIRSTNAME'] = $billingAddress->getFirstname();
+		        $payDataOperacion ['CSBTLASTNAME'] = $billingAddress->getLastname();
+               		$payDataOperacion ['CSBTCUSTOMERID'] = "guest";
 		} else{
 			$payDataOperacion ['CSMDD8'] = "N";
 			$payDataOperacion ['CSMDD9'] = $customer->getPasswordHash();
 			$now = new \DateTime();
 			$fecha = new \DateTime($customer->getCreatedAt());
 			$payDataOperacion ['CSMDD7'] = $now->diff($fecha, true)->format('%a');
-		}
+
+		        $payDataOperacion ['CSBTEMAIL'] = $customer->getEmail();
+		        $payDataOperacion ['CSBTFIRSTNAME'] = $customer->getFirstname();
+		        $payDataOperacion ['CSBTLASTNAME'] = $customer->getLastname();
+			$payDataOperacion ['CSBTCUSTOMERID'] = $customer->getId();
+   		}
 		$payDataOperacion ['CSMDD11'] = $billingAddress->getTelephone();
 		
 		return $payDataOperacion;
@@ -194,18 +200,17 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - GetDataControlFraudeRetail");
 		$payDataOperacion = array();
 		$payDataOperacion ['CSSTCITY'] = $shippingAddress->getCity();
-        $payDataOperacion ['CSSTCOUNTRY'] = $shippingAddress->getCountryId();
-        $payDataOperacion ['CSSTEMAIL'] = $customer->getEmail();
-        $payDataOperacion ['CSSTFIRSTNAME'] = $customer->getFirstname();
-        $payDataOperacion ['CSSTLASTNAME'] = $customer->getLastname();
-        $payDataOperacion ['CSSTPHONENUMBER'] = $shippingAddress->getTelephone();
-        $payDataOperacion ['CSSTPOSTALCODE'] = $shippingAddress->getPostcode();
-        $payDataOperacion ['CSSTSTATE'] = substr($shippingAddress->getRegion(),0,1);
-        $payDataOperacion ['CSSTSTREET1'] = implode(" ",$shippingAddress->getStreet());
-        $payDataOperacion ['CSMDD12'] = "10";
-        $payDataOperacion ['CSMDD13'] = $this->_order->getShippingDescription();
-        $payDataOperacion ['CSMDD16'] = "";
-		
+                $payDataOperacion ['CSSTCOUNTRY'] = $shippingAddress->getCountryId();
+                $payDataOperacion ['CSSTEMAIL'] = $shippingAddress->getEmail();
+                $payDataOperacion ['CSSTFIRSTNAME'] = $shippingAddress->getFirstname();
+                $payDataOperacion ['CSSTLASTNAME'] = $shippingAddress->getLastname();
+                $payDataOperacion ['CSSTPHONENUMBER'] = $shippingAddress->getTelephone();
+                $payDataOperacion ['CSSTPOSTALCODE'] = $shippingAddress->getPostcode();
+                $payDataOperacion ['CSSTSTATE'] = substr($shippingAddress->getRegion(),0,1);
+                $payDataOperacion ['CSSTSTREET1'] = implode(" ",$shippingAddress->getStreet());
+                $payDataOperacion ['CSMDD12'] = "10";
+                $payDataOperacion ['CSMDD13'] = $this->_order->getShippingDescription();
+                $payDataOperacion ['CSMDD16'] = "";
 		return $payDataOperacion;
 	}
 	
@@ -254,6 +259,11 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
         $payDataOperacion['CURRENCYCODE'] = "032";
         $payDataOperacion['EMAILCLIENTE'] = $customer->getEmail();
 		
+
+        if($this->_scopeConfig->getValue('payment/todopago/cuotas_enable', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
+            $payDataOperacion['MAXINSTALLMENTS'] = $this->_scopeConfig->getValue('payment/todopago/cuotas_cant', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        }
+
 		return $payDataOperacion;
 	}
 	

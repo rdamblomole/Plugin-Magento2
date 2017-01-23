@@ -13,13 +13,20 @@
 					if($key == "REFUNDS") {
 						echo "<tr><td colspan='2'><strong>Devoluciones</strong></td></tr>";
 						if(is_array($value) && isset($value["REFUND"])) {
-							$value = $value["REFUND"];
-							foreach($value as $val) {
-								foreach($val as $key => $v) {
-									echo "<tr><td><strong>$key: </strong></td><td>".$v."</td></tr>";
-								}
-								echo "<tr><td colspan='2'>-----------</td></tr>";
-							}
+                                                        $value = $value["REFUND"];
+                                                        if(isset($value["ID"])){
+                                                                foreach($value as $key => $v) {
+                                                                        echo "<tr><td><strong>$key: </strong></td><td>".$v."</td></tr>";
+                                                                }
+                                                               echo "<tr><td colspan='2'>-----------</td></tr>";
+                                                        } else {
+                                                                foreach($value as $val) {
+                                                                        foreach($val as $key => $v) {
+                                                                                echo "<tr><td><strong>$key: </strong></td><td>".$v."</td></tr>";
+                                                                        }
+                                                                        echo "<tr><td colspan='2'>-----------</td></tr>";
+                                                                }
+                                                        } 
 						} else {
 							echo "<tr><td colspan='2'>Ninguna</td></tr>";
 							echo "<tr><td colspan='2'>-----------</td></tr>";

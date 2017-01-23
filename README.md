@@ -7,7 +7,7 @@ Plug in para la integración con gateway de pago <strong>Todo Pago</strong>
 - [Instalación](#instalacion)
 - [Configuración](#configuracion)
  - [Configuración plug in](#confplugin)
-- [Datos adiccionales para prevención de fraude](#cybersource) 
+- [Datos adiccionales para prevención de fraude](#cybersource)
 - [Consulta de transacciones](#constrans)
 - [Devoluciones](#devoluciones)
 - [Tablas de referencia](#tablas)
@@ -28,9 +28,9 @@ composer require todopago/magento2-plugin
 
 **Manualmente**
 
-A.  Descomprimir el archivo magento2-plugin-master.zip. 
+A.  Descomprimir el archivo magento2-plugin-master.zip.
 
-B. Copiar todo su contenido en la carpeta `app/code/Primsa/TodoPago`
+B. Copiar todo su contenido en la carpeta `app/code/Prisma/TodoPago`
 
 Luego,
 
@@ -42,7 +42,7 @@ php bin/magento setup:di:compile
 php bin/magento setup:static-content:deploy es_AR #idioma instalado de la tienda.
 ```
 2.	Refrescar el cache de Magento desde 'System -> Cache Management'
-3.	Luego ir a 'Stores -> Configuration -> Payment Methods' y configurar desde la pestaña de <strong>Todo Pago</strong>.
+3.	Luego ir a 'Stores -> Configuration -> Sales -> Payment Methods' y configurar desde la pestaña de <strong>Todo Pago</strong>.
 
 Observaci&oacute;n:
 Descomentar: <em>extension=php_curl.dll</em>, <em>extension=php_soap.dll</em> y <em>extension=php_openssl.dll</em> del php.ini, ya que para la conexión al gateway se utiliza la clase <em>SoapClient</em> del API de PHP.
@@ -55,7 +55,7 @@ Descomentar: <em>extension=php_curl.dll</em>, <em>extension=php_soap.dll</em> y 
 [configuración plug in](#confplugin).
 <a name="confplugin"></a>
 ####Configuración plug in
-Para llegar al menu de configuración ir a: <em>Stores -> Configuration</em> y seleccionar Paymenth Methods en el menú izquierdo. Entre los medios de pago aparecerá una solapa con el nombre <strong>Todo Pago</strong>. 
+Para llegar al menu de configuración ir a: <em>Stores -> Configuration</em> y seleccionar Paymenth Methods en el menú izquierdo. Entre los medios de pago aparecerá una solapa con el nombre <strong>Todo Pago</strong>.
 
 <a name="confplanes"></a>
 <br />
@@ -89,8 +89,8 @@ Para acceder a los datos del comprador se utiliza el metodo getBillingAddress() 
 -- Total:  $order->getGrandTotal();
 -- IP de la pc del comprador: $order->getRemoteIp();
 ```
-Otros de los modelos utlilizados es <em>Customer</em> del cual a trav&eacute;s  del m&eacute;todo <em>getPasswordHash()</em>, se extrae el password del usuario (comprador) y la tabla <em>sales_flat_invoice_grid</em>, donde se consultan las transacciones facturadas al comprador. 
-<a name="cons_retail"></a> 
+Otros de los modelos utlilizados es <em>Customer</em> del cual a trav&eacute;s  del m&eacute;todo <em>getPasswordHash()</em>, se extrae el password del usuario (comprador) y la tabla <em>sales_flat_invoice_grid</em>, donde se consultan las transacciones facturadas al comprador.
+<a name="cons_retail"></a>
 ####Consideraciones para vertical RETAIL
 Las consideración para el caso de empresas del rubro <strong>RETAIL</strong> son similares a las <em>consideraciones generales</em> con la diferencia de se utiliza el m&eacute;todo getShippingAddress() que devuelve un objeto y del cual se utilizan los siguientes m&eacute;todos;
 ```php
@@ -113,7 +113,7 @@ nota: el valor resultante de $order->getItemsCollection(), se usan como referenc
 <strong>Provincias:</strong> uno de los datos requeridos para prevención común a todos los verticales  es el campo provinicia/state tanto del comprador como del lugar de envío, para tal fin el plug in utiliza el valor del campo región de las tablas de la orden (sales_flat_order_address) a través del getRegion() tanto del <em>billingAddress</em> como del <em>shippingAddress</em>. El formato de estos datos deben ser tal cual la tabla de referencia (tabla provincias). Para simplificar la implementación de la tabla en magento se deja para su implementación la clase Decidir\Decidirpago\Model\System\Config\Source\Csprovincias.php, con el formato requerido. Al final de este documento se muestra un script sql que pude ser tomado de refrencia.
 <br />
 
-En caso que la tienda decida no implementar este nuevo atributo o que el valor quede vac&iacute;o el plug in mandara al sistema el mismo n&uacute;mero que devuleve el m&eacute;todo $order->getBillingAddress()->getTelephone(). 
+En caso que la tienda decida no implementar este nuevo atributo o que el valor quede vac&iacute;o el plug in mandara al sistema el mismo n&uacute;mero que devuleve el m&eacute;todo $order->getBillingAddress()->getTelephone().
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="constrans"></a>
