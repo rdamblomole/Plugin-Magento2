@@ -95,6 +95,17 @@ class Secondstep extends \Magento\Framework\App\Action\Action
 				$message = "Todo Pago: " . $res['StatusMessage'];                  
 			}
 
+
+            /*costo financiero*/
+            $amountBuyer = isset($res['Payload']['Request']['AMOUNTBUYER'])?$res['Payload']['Request']['AMOUNTBUYER']:number_format($order->getGrandTotal(), 2, ".", "");
+            $cf = $amountBuyer - $order->getGrandTotal();
+
+            $order->setTodopagoCostofinanciero($cf);
+            $order->setGrandTotal($amountBuyer);
+            $order->setBaseGrandTotal($amountBuyer);
+
+            $order->save();
+
 			$payment = $order->getPayment();
 			$payment->setIsTransactionClosed(1);
 			
@@ -117,10 +128,14 @@ class Secondstep extends \Magento\Framework\App\Action\Action
 			$payment->setSkipOrderProcessing(true);
 			
 			$invoice = $objectManager->create('Magento\Sales\Model\Service\InvoiceService')->prepareInvoice($order);
-			$invoice->setTransactionId($payment->getTransactionId())
+			$invoice = $invoice->setTransactionId($payment->getTransactionId())
                 ->addComment("Invoice created.")
-				->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE)
-                ->register()
+				->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+
+			$invoice->setGrandTotal($amountBuyer);
+            $invoice->setBaseGrandTotal($amountBuyer);
+
+            $invoice->register()
                 ->pay();
 			$invoice->save();
 					

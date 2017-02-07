@@ -9,7 +9,7 @@
     <system>
         <section id="payment">
             <group id="todopago" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>TodoPago v1.2.1</label>
+                <label>TodoPago v1.2.2</label>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Activo</label>
 					<comment>Activa y desactiva el módulo de pago</comment>

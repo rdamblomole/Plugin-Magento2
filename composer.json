@@ -2,7 +2,7 @@
     "name": "todopago/magento2-plugin",
     "description": "Plugin de integracion de TodoPago para Magento 2",
     "type": "magento2-module",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "require": {
         "todopago/php-sdk": "*"
     },
