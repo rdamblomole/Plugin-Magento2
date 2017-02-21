@@ -53,7 +53,7 @@ class InstallSchema implements InstallSchemaInterface
             'TodoPago Transacciones'
         );
         $setup->getConnection()->createTable($table);
- 
+
         $setup->endSetup();
 	}
 }

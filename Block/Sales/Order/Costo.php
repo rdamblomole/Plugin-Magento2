@@ -11,7 +11,7 @@ namespace Prisma\TodoPago\Block\Sales\Order;
 
 
 
-class Fee extends \Magento\Framework\View\Element\Template
+class Costo extends \Magento\Framework\View\Element\Template
 {
     /**
      * Tax configuration model
@@ -108,18 +108,14 @@ class Fee extends \Magento\Framework\View\Element\Template
 
         $fee = new \Magento\Framework\DataObject(
                 [
-                    'code' => 'todopago_costofinanciero',
+                    'code' => 'todopagocostofinanciero',
                     'strong' => false,
-                    'value' => 100,
-                    //'value' => $this->_source->getFee(),
+                    'value' => $this->_order->getTodopagocostofinanciero(),
                     'label' => __('Otros Cargos'),
                 ]
             );
 
-            $parent->addTotal($fee, 'todopago_costofinanciero');
-           // $this->_addTax('grand_total');
-            $parent->addTotal($fee, 'todopago_costofinanciero');
-
+            $parent->addTotal($fee, 'todopagocostofinanciero');
 
             return $this;
     }

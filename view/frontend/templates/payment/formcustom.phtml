@@ -28,6 +28,12 @@
 				<select id="promosCbx" class="select-control"></select>
 				<label id="labelPromotionTextId"></label>
 			</div>
+
+			<div class="">
+			    <!-- Para los casos en el que el comercio opera con PEI -->
+			    <label id="labelPeiCheckboxId"></label>
+			    <input id="peiCbx"/>
+			</div>
 			
 			<div class="input-group input-group-sm">
 				<input id="numeroTarjetaTxt" class="form-control fixed-width-xl">
@@ -67,6 +73,11 @@
 				<input id="emailTxt" class="form-control"/><br/>
 			</div>
 			
+			<div class="input-group input-group-sm">
+			    <!-- Para los casos en el que el comercio opera con PEI -->
+			    <label id="labelPeiTokenTextId"></label>
+			    <input class="form-control" id="peiTokenTxt"/>
+			</div>
 			<div id="tp-bt-wrapper">
 				<button id="btnPagoBilletera" class="tp-button button btn-sm btn btn-success">Pagar con Billetera</button>
 				<button id="MY_btnConfirmarPago"/>

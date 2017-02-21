@@ -35,11 +35,11 @@ class Costo extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         $fee = 0.00; //Excellence_Fee_Model_Fee::getFee();
         $balance = $fee - $exist_amount;
 
-        $total->setTotalAmount('todopago_costofinanciero', $balance);
-        $total->setBaseTotalAmount('todopago_costofinanciero', $balance);
+        $total->setTotalAmount('todopagocostofinanciero', $balance);
+        $total->setBaseTotalAmount('todopagocostofinanciero', $balance);
 
-        $total->setTodopagoCostofinanciero($balance);
-        $total->setBaseTodopagoCostofinanciero($balance);
+        $total->setTodopagocostofinanciero($balance);
+        $total->setBaseTodopagocostofinanciero($balance);
 
         $total->setGrandTotal($total->getGrandTotal() + $balance);
         $total->setBaseGrandTotal($total->getBaseGrandTotal() + $balance);
@@ -77,9 +77,9 @@ class Costo extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
     {
         return [
-            'code' => 'todopago_costofinanciero',
+            'code' => 'todopagocostofinanciero',
             'title' => 'Otros Cargos',
-            'value' => 100
+            'value' => $total->getTodopagocostofinanciero()
         ];
     }
 

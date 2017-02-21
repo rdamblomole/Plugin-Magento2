@@ -100,11 +100,13 @@ class Secondstep extends \Magento\Framework\App\Action\Action
             $amountBuyer = isset($res['Payload']['Request']['AMOUNTBUYER'])?$res['Payload']['Request']['AMOUNTBUYER']:number_format($order->getGrandTotal(), 2, ".", "");
             $cf = $amountBuyer - $order->getGrandTotal();
 
-            $order->setTodopagoCostofinanciero($cf);
+            $order->setTodopagocostofinanciero($cf);
             $order->setGrandTotal($amountBuyer);
             $order->setBaseGrandTotal($amountBuyer);
 
             $order->save();
+
+            $this->_logger->debug("TODOPAGO - CF: ".$order->getTodopagocostofinanciero());
 
 			$payment = $order->getPayment();
 			$payment->setIsTransactionClosed(1);
