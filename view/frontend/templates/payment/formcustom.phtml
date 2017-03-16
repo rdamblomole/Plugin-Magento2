@@ -154,7 +154,10 @@
 			window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?Answer="+response.AuthorizationKey;
 		}
 		function customPaymentErrorResponse(response) {
-			window.top.location = "<?php echo $block->getBaseUrl().'checkout/onepage/failure'; ?>";
+			if(response.AuthorizationKey != "")
+				window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?Answer="+response.AuthorizationKey;
+			else
+				window.top.location = "<?php echo $block->getBaseUrl().'checkout/onepage/failure'; ?>";
 		}
 		function initLoading() {
 			console.log('Cargando');
