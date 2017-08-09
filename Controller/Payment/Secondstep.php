@@ -77,15 +77,20 @@ class Secondstep extends \Magento\Framework\App\Action\Action
     {
 		$this->_logger->debug("TODOPAGO - SECOND STEP INIT");
         try {
-			$id = $this->getRequest()->getParam("id");			
+			$id = $this->getRequest()->getParam("id");
 			$ak = $this->getRequest()->getParam("Answer");
-			
+			$er = $this->getRequest()->getParam("error");
+
+			if(!empty($er)) {
+				throw new \Exception($er);
+			}
+
 			$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
 			$order_model = $objectManager->get('Magento\Sales\Model\Order');
 			$order = $order_model->load($id);
 
-            $method = $order->getPayment()->getMethod();
-            $methodInstance = $this->_paymentHelper->getMethodInstance($method);
+		        $method = $order->getPayment()->getMethod();
+            		$methodInstance = $this->_paymentHelper->getMethodInstance($method);
 			$this->_logger->debug("TODOPAGO - SECOND STEP SDK");
 			$res = $methodInstance->secondStep($order, $ak);
 
@@ -201,11 +206,12 @@ class Secondstep extends \Magento\Framework\App\Action\Action
 			$payment->setIsTransactionDenied(true);
 			$transaction->close();
 			$order->cancel()->save();
-			
-            $this->messageManager->addException($e, __('Something went wrong, please try again later'));
+
+            $this->messageManager->addException($e, $e->getMessage());
             $this->_logger->critical($e);
-            $this->_getCheckoutSession()->restoreQuote();
-            $this->_redirect('checkout/onepage/failure');
+            if($methodInstance->getRestoreCart())
+                    $this->_getCheckoutSession()->restoreQuote();
+            $this->_redirect('checkout/cart');
         }
     }
 }

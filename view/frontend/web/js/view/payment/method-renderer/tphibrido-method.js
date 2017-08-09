@@ -63,8 +63,11 @@ function (
 
         afterPlaceOrder: function () {
 			jQuery.get(url.build('todopago/payment/data'), function( data ) {
-					var body = document.body,
-						html = document.documentElement;
+					if(typeof data.error !== 'undefined') {
+						window.location = data.url;
+						return;
+                                        }
+					var body = document.body, html = document.documentElement;
 
 					var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
 					jQuery('body').append("<div id='overlay'></div>");

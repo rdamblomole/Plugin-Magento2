@@ -114,7 +114,7 @@ class Data extends \Magento\Framework\App\Action\Action
 			$payment->setSkipOrderProcessing(true);
 			$order->save();
 			$this->_logger->debug("TODOPAGO - FIRST STEP REDIRECT");
-			
+
 			if($methodInstance->getCode() == "tpredirect") {
 				$this->_redirect($res["URL_Request"]);
 			} else {
@@ -123,26 +123,26 @@ class Data extends \Magento\Framework\App\Action\Action
 				$result = $this->resultJsonFactory->create();
 				return $result->setData(['url' => $url]);
 			}
-			
+
         } catch (\Exception $e) {
 			$this->_logger->debug("TODOPAGO - FIRST STEP EXCEPTION");
             $order = $this->_getCheckoutSession()->getLastRealOrder();
             $method = $order->getPayment()->getMethod();
             $methodInstance = $this->_paymentHelper->getMethodInstance($method);
 			$payment = $order->getPayment();
-			
+
 			if($methodInstance->getAmbiente() == "test") {                    
 				$message = "Todo Pago (TEST): " . $e->getMessage();                    
 			} else {                  
 				$message = "Todo Pago: " . $e->getMessage();                  
 			}
-			
+
 			$transaction = $this->transactionRepository->getByTransactionType(
 				Transaction::TYPE_ORDER,
 				$payment->getId(),
 				$payment->getOrder()->getId()
 			);
-			
+
 			if($transaction == null) {
 				$orderTransactionId = $order->getId();
 				$transaction = $this->transactionBuilder->setPayment($payment)
@@ -150,7 +150,7 @@ class Data extends \Magento\Framework\App\Action\Action
 					->setTransactionId($order->getId())
 					->build(Transaction::TYPE_ORDER);
 			}
-			
+
 			$payment->addTransactionCommentsToOrder($transaction, $message);
 
 			$statuses = $methodInstance->getOrderStatuses();
@@ -160,12 +160,20 @@ class Data extends \Magento\Framework\App\Action\Action
 			$payment->setSkipOrderProcessing(true);
 			$payment->setIsTransactionDenied(true);
 			$order->cancel()->save();
-			
+
             $this->messageManager->addException($e, __('Something went wrong, please try again later'));
             $this->_logger->critical($e);
-            $this->_getCheckoutSession()->restoreQuote();
-			
-            $this->_redirect('checkout/cart');
+            if($methodInstance->getRestoreCart())
+	            $this->_getCheckoutSession()->restoreQuote();
+
+            if($methodInstance->getCode() == "tpredirect") {
+                $this->_redirect('checkout/cart');
+	    } else {
+		$url = $methodInstance->getErrorUrl();
+
+		$result = $this->resultJsonFactory->create();
+		return $result->setData(['url' => $url, 'error' => true]);
+	    }
         }
     }
 }

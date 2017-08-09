@@ -9,7 +9,7 @@
     <system>
         <section id="payment">
             <group id="todopago" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>TodoPago v1.2.2</label>
+                <label>TodoPago v1.5.0</label>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Activo</label>
 					<comment>Activa y desactiva el módulo de pago</comment>
@@ -35,6 +35,12 @@
                     <comment>Número máximo de cuotas a mistrar en el formulario de pago</comment>
                      <source_model>Prisma\TodoPago\Model\Config\Source\Cuotas</source_model>
                 </field>
+                <field id="restore_cart" translate="label" type="select" sortOrder="32" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Restaurar carrito</label>
+                    <comment>Ante una orden o pago fallida, indica si se debe restaurar o no el carrito de compras. Si: restaura el carrito. No: vacía el carrito.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
 				<field id="ambiente" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Ambiente</label>
 					<comment>Debe ser cofigurado en AMBIENTE -> DEVELOPERS / PRODUCCION</comment>
@@ -56,6 +62,17 @@
                     <label>Maximum Order Total</label>
                     <comment>Leave empty to disable limit</comment>
                 </field>
+               <field id="timeout_enable" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Activar Timeout</label>
+                    <comment>Configurar tiempo de expiración del formulario de pago personalizado</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>                
+                <field id="timeout" translate="label" type="text" sortOrder="101" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Tiempo de expiración del formulario de pago</label>
+                    <comment>Tiempo maximo en el que se puede realizar el pago en el formulario en milisegundos. Por defecto si no se envia el valor es de 1800000 (30 minutos). Mínimo: 300000. Máximo: 21600000</comment>
+                    <validate>validate-digits validate-digits-range digits-range-300000-21600000</validate>
+                </field>
+
 				
 				<include path="Prisma_TodoPago::system/ambiente.xml"/>
 				<include path="Prisma_TodoPago::system/estados.xml"/>

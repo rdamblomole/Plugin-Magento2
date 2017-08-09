@@ -145,19 +145,19 @@
 			console.log(parametros.field + " ==> " + parametros.error);
 		}
 		function billeteraPaymentResponse(response) {
-			if(response.AuthorizationKey != "")
+			if(response.AuthorizationKey)
 				window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?Answer="+response.AuthorizationKey;
 			else
-				window.top.location = "<?php echo $block->getBaseUrl().'checkout/onepage/failure'; ?>";
+				window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?error="+response.ResultMessage;
 		}
 		function customPaymentSuccessResponse(response) {
 			window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?Answer="+response.AuthorizationKey;
 		}
 		function customPaymentErrorResponse(response) {
-			if(response.AuthorizationKey != "")
+			if(response.AuthorizationKey)
 				window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?Answer="+response.AuthorizationKey;
 			else
-				window.top.location = "<?php echo $block->getBaseUrl().'checkout/onepage/failure'; ?>";
+				window.top.location = "<?php echo $block->getBaseUrl().'todopago/payment/secondstep/id/'.$this->getOrden(); ?>?error="+response.ResultMessage;
 		}
 		function initLoading() {
 			console.log('Cargando');

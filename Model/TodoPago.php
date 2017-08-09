@@ -258,7 +258,10 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
         $payDataOperacion['AMOUNT'] = number_format($this->_order->getGrandTotal(), 2, ".", "");
         $payDataOperacion['CURRENCYCODE'] = "032";
         $payDataOperacion['EMAILCLIENTE'] = $customer->getEmail();
-		
+
+        if($this->_scopeConfig->getValue('payment/todopago/timeout_enable', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1){
+        	$payDataOperacion['TIMEOUT'] = $this->_scopeConfig->getValue('payment/todopago/timeout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        }
 
         if($this->_scopeConfig->getValue('payment/todopago/cuotas_enable', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
             $payDataOperacion['MAXINSTALLMENTS'] = $this->_scopeConfig->getValue('payment/todopago/cuotas_cant', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
@@ -396,7 +399,13 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - GetAmbiente");
 		return $this->_tpConnector->getAmbiente();
 	}
-	
+
+	public function getRestoreCart()
+	{
+		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - GetRestoreCart");
+		return $this->_scopeConfig->getValue('payment/todopago/restore_cart', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+	}
+
 	public function getOrderStatuses()
 	{
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - GetOrderStatuses");
@@ -425,7 +434,9 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
         $result = $this->_tpConnector->returnRequest($returnData);
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - Response: " . json_encode($result));
         if($result['StatusCode'] != 2011) {
-			throw new \Exception($result['StatusMessage']);
+            throw new \Magento\Framework\Exception\LocalizedException(
+                __($result['StatusMessage'])
+            );
         }
         return $this;
 

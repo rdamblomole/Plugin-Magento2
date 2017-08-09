@@ -20,4 +20,9 @@ class TpHibrido extends TodoPago
 	{
 		return $this->_urlInterface->getBaseUrl().'todopago/payment/formcustom/id/' . $this->_order->getId();
 	}
+
+	public function getErrorUrl()
+	{
+		return $this->_urlInterface->getBaseUrl().'checkout/cart';
+	}
 }
