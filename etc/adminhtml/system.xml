@@ -73,6 +73,12 @@
                     <validate>validate-digits validate-digits-range digits-range-300000-21600000</validate>
                 </field>
 
+                <field id="googlemaps" translate="label" type="select" sortOrder="102" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Verificar domicilio con Googlemaps</label>
+                    <comment>Verificar domicilio con Googlemaps</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
 				
 				<include path="Prisma_TodoPago::system/ambiente.xml"/>
 				<include path="Prisma_TodoPago::system/estados.xml"/>

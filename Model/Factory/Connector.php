@@ -37,8 +37,7 @@ class Connector {
 			$this->_security = $this->_scopeConfig->getValue('payment/todopago/ambiente_g/developers/security', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 		}
 		
-		$this->_sdk = new \TodoPago\Sdk($this->getHeader(), $this->_ambiente);
-				
+		$this->_sdk = new \TodoPago\Sdk($this->getHeader(), $this->_ambiente);	
 	}
 	
 	protected function getHeader()
@@ -68,5 +67,10 @@ class Connector {
 	public function getAmbiente()
 	{
 		return $this->_ambiente;
+	}
+
+	public function setGoogleClient(){
+		$g = new \TodoPago\Client\Google();
+		$this->_sdk->setGoogleClient($g);
 	}
 }

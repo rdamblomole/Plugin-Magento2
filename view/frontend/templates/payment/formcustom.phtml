@@ -1,7 +1,7 @@
 <?php if($this->getAmbiente() != "test"): ?>
-<script src="https://forms.todopago.com.ar/resources/TPHybridForm-v0.1.js"></script>
+<script src="https://devteam.com.ar/hibrido2.js"></script>
 <?php else: ?>
-<script src="https://developers.todopago.com.ar/resources/TPHybridForm-v0.1.js"></script>
+<script src="https://devteam.com.ar/hibrido2.js"></script>
 <?php endif; ?>
 
 <div class="contentContainer main" style="width: auto">
@@ -14,73 +14,84 @@
 	<div id="tp-form-tph">
 		<div id="tp-logo"></div>
 		<div id="tp-content-form">
+
 			<h5>Eleg&iacute; tu forma de pago </h5>
 			
 			<div class="">
-				<select id="formaDePagoCbx" class="select-control"></select>
+				<select id="formaPagoCbx" class="select-control"></select>
 			</div>	
-			
+
+			<div class="input-group input-group-sm cienper">
+				<label id="numeroTarjetaLbl"></label><div></div>
+				<input id="numeroTarjetaTxt" class="form-control">
+			</div>
+
+
+			<label id="fechaLbl" class="left"></label>
+			<div class="">
+				<select id="mesCbx" class="select-control"></select>
+			</div>	
+
+			<div class="">
+				<select id="anioCbx" class="select-control"></select>
+			</div>				
+
+
+			<div class="">
+				<select id="medioPagoCbx" class="select-control"></select>
+			</div>			
+
+
 			<div class="">
 				<select id="bancoCbx" class="select-control"></select>
 			</div>	
 			
 			<div class="">
 				<select id="promosCbx" class="select-control"></select>
-				<label id="labelPromotionTextId"></label>
+				<label id="promosLbl"></label>
 			</div>
 
 			<div class="">
 			    <!-- Para los casos en el que el comercio opera con PEI -->
-			    <label id="labelPeiCheckboxId"></label>
-			    <input id="peiCbx"/>
+			    <label id="peiLbl"></label>
+			    <input id="peiCbx" class="select-control"/>
 			</div>
 			
-			<div class="input-group input-group-sm">
-				<input id="numeroTarjetaTxt" class="form-control fixed-width-xl">
+
+			
+		
+			<div class="input-group input-group-sm cincuentaper">
+				<input id="codigoSeguridadTxt" class="form-control"/>
+				<label id="codigoSeguridadLbl" class="tp-label"></label>
 			</div>
 			
-			<div class="row date-group">
-			  <div class="col-sm-1">
-				<div class="input-group-sm">
-				  <input id="mesTxt" class="left form-control">
-				</div><!-- /input-group -->
-			  </div><!-- /.col-lg-6 -->
-			  <div class="col-sm-1">
-				<div class="input-group-sm">
-				 <input id="anioTxt" class="left form-control">
-				</div><!-- /input-group -->
-			  </div><!-- /.col-lg-6 -->
-			</div><!-- /.row -->
-						
-			<div class="input-group input-group-sm">
-				<label id="labelCodSegTextId" class="tp-label"></label>
-				<input id="codigoSeguridadTxt" class="left form-control"/>
+			<div class="input-group input-group-sm cincuentaper">
+				<input id="nombreTxt" class="form-control"/>
 			</div>
 			
-			<div class="input-group input-group-sm">
-				<input id="apynTxt" class="form-control"/>
+			<div>
+				<select id="tipoDocCbx" class="select-control cincuentaper"></select>
 			</div>
 			
-			<div class="input-group input-group-sm">
-				<select id="tipoDocCbx" class="select-control"></select>
-			</div>
-			
-			<div class="input-group input-group-sm">
+			<div class="input-group input-group-sm cincuentaper">
 				<input id="nroDocTxt" class="form-control"/>
 			</div>
 			
-			<div class="input-group input-group-sm">
-				<input id="emailTxt" class="form-control"/><br/>
+			<div class="input-group input-group-sm cincuentaper">
+				<input id="emailTxt" class="form-control" /><br/>
 			</div>
+
+
+
 			
 			<div class="input-group input-group-sm">
 			    <!-- Para los casos en el que el comercio opera con PEI -->
-			    <label id="labelPeiTokenTextId"></label>
-			    <input class="form-control" id="peiTokenTxt"/>
+			    <label id="tokenPeiLbl"></label>
+			    <input class="form-control" id="tokenPeiTxt"/>
 			</div>
 			<div id="tp-bt-wrapper">
 				<button id="btnPagoBilletera" class="tp-button button btn-sm btn btn-success">Pagar con Billetera</button>
-				<button id="MY_btnConfirmarPago"/>
+				<button id="MY_btnConfirmarPago" style="display: none!important"/>
 				<button id="btnConfirmarPagoValida" class="tp-button button btn-sm btn btn-success">Pagar</button>
 			</div>
 		</div>	
@@ -118,16 +129,15 @@
 		/************* CONFIGURACION DEL API ************************/
 		window.TPFORMAPI.hybridForm.initForm({
 			callbackValidationErrorFunction: 'validationCollector',
-			callbackBilleteraFunction: 'billeteraPaymentResponse',
+               botonPagarConBilleteraId: 'btnPagoBilletera',
+               callbackBilleteraFunction: 'billeteraPaymentResponse',
+			callbackCustomSuccessFunction: 'customPaymentSuccessResponse',
+			callbackCustomErrorFunction: 'customPaymentErrorResponse',
+			botonPagarId: 'btnConfirmarPagoValida',
 			modalCssClass: 'modal-class',
 			modalContentCssClass: 'modal-content',
 			beforeRequest: 'initLoading',
-			afterRequest: 'stopLoading',
-			callbackCustomSuccessFunction: 'customPaymentSuccessResponse',
-			callbackCustomErrorFunction: 'customPaymentErrorResponse',
-			botonPagarId: 'MY_btnConfirmarPago',
-                        botonPagarConBilleteraId: 'btnPagoBilletera',
-			codigoSeguridadTxt: 'Codigo',
+			afterRequest: 'stopLoading'			
 		});
 		
 		window.TPFORMAPI.hybridForm.setItem({
@@ -135,7 +145,8 @@
 			merchantId: merchantId,
 			defaultNombreApellido: CompleteName,
 			defaultMail: mail,
-			numericAmount: numericAmount
+			defaultNumeroDoc: '',
+			defaultTipoDoc: 'DNI'
 		});
 
 		function validationCollector(parametros) {

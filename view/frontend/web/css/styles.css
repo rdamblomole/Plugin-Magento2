@@ -33,9 +33,11 @@
 #mesTxt, #anioTxt{
 	max-width: 66px;
 }
+/*
 #codigoSeguridadTxt{
 	max-width: 122px;
 }
+*/
 #promosCbx{
 	min-width:61px;
 }
@@ -71,4 +73,14 @@
 }
 #MY_btnConfirmarPago{
 	display:none;
+}
+.contentContainer{
+	padding: 45px;
+}
+.cincuentaper{
+width: 50%
+
+}
+.cienper{
+width: 100%	
 }

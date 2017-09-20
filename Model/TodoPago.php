@@ -26,6 +26,7 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 	protected $_supportedCurrencyCodes = array('USD','ARS');
 	protected $_urlInterface;
 	protected $_transaccion;
+     protected $_direccion;
 	protected $_tpConnector = null;
 	protected $_order = null;
 	protected $hibrido_flag = false;
@@ -40,7 +41,8 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
         \Magento\Payment\Model\Method\Logger $logger,
 		\Prisma\TodoPago\Model\Factory\Connector $tpc,
 		\Magento\Framework\Url $urlInterface,
-		TransaccionFactory $transaccionFactory,
+          TransaccionFactory $transaccionFactory,
+          DireccionFactory $direccionFactory,          
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
@@ -57,7 +59,8 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
             $resourceCollection,
             $data
         );
-		$this->_transaccion = $transaccionFactory;
+          $this->_transaccion = $transaccionFactory;
+          $this->_direccion = $direccionFactory;          
 		$this->_urlInterface = $urlInterface;
         $this->_tpConnector = $tpc;
 	}
@@ -158,17 +161,17 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
         // CS Common
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - GetDataControlFraudeCommon");
 		$payDataOperacion = array();
-                $payDataOperacion ['CSBTCITY'] = $billingAddress->getCity();
-		$payDataOperacion ['CSBTCOUNTRY'] = $billingAddress->getCountryId();
-		$payDataOperacion ['CSBTIPADDRESS'] = $this->getIp();
-		$payDataOperacion ['CSBTPOSTALCODE'] = $billingAddress->getPostcode();
-		$payDataOperacion ['CSBTPHONENUMBER'] = $billingAddress->getTelephone();
-		$payDataOperacion ['CSBTSTATE'] =  substr($billingAddress->getRegion(),0,1);
-		$payDataOperacion ['CSBTSTREET1'] = implode(" ",$billingAddress->getStreet());
-		$payDataOperacion ['CSBTSTREET2'] = "";
-		$payDataOperacion ['CSPTCURRENCY'] = 'ARS';
-		$payDataOperacion ['CSPTGRANDTOTALAMOUNT'] = number_format($this->_order->getGrandTotal(), 2, ".", "");
-		$payDataOperacion ['CSMDD6'] = "Web";
+          $payDataOperacion ['CSBTCITY'] = $billingAddress->getCity();
+          $payDataOperacion ['CSBTCOUNTRY'] = $billingAddress->getCountryId();
+          $payDataOperacion ['CSBTPOSTALCODE'] = $billingAddress->getPostcode();
+          $payDataOperacion ['CSBTSTATE'] =  substr($billingAddress->getRegion(),0,1);
+          $payDataOperacion ['CSBTSTREET1'] = implode(" ",$billingAddress->getStreet());
+          $payDataOperacion ['CSBTIPADDRESS'] = $this->getIp();
+          $payDataOperacion ['CSBTPHONENUMBER'] = $billingAddress->getTelephone();          
+          $payDataOperacion ['CSBTSTREET2'] = "";
+          $payDataOperacion ['CSPTCURRENCY'] = 'ARS';
+          $payDataOperacion ['CSPTGRANDTOTALAMOUNT'] = number_format($this->_order->getGrandTotal(), 2, ".", "");
+          $payDataOperacion ['CSMDD6'] = "Web";
 
 		if($this->_order->getCustomerIsGuest()){
 			$payDataOperacion ['CSMDD8'] = "Y";
@@ -211,6 +214,7 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
                 $payDataOperacion ['CSMDD12'] = "10";
                 $payDataOperacion ['CSMDD13'] = $this->_order->getShippingDescription();
                 $payDataOperacion ['CSMDD16'] = "";
+
 		return $payDataOperacion;
 	}
 	
@@ -270,23 +274,32 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		return $payDataOperacion;
 	}
 	
+
+     protected function getSha1(){
+          $shippingAddress = $this->getShippingAddress();
+          $billingAddress = $this->getBillingAddress();
+
+          $sha1 = sha1($shippingAddress->getCountryId() . $shippingAddress->getPostcode() . substr($shippingAddress->getRegion(),0,1) . implode(" ",$shippingAddress->getStreet()) . $shippingAddress->getCity() . $shippingAddress->getCity() . $billingAddress->getCountryId() . $billingAddress->getPostcode() . substr($billingAddress->getRegion(),0,1) . implode(" ",$billingAddress->getStreet()) . $billingAddress->getCity() . $billingAddress->getCity() );
+          return $sha1;          
+     }
+
+
 	protected function getPayData()
 	{
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - GetPayData");
 		$products = $this->getProductsFromOrder();
 		$customer = $this->getCustomerData();
-		$shippingAddress = $this->getShippingAddress();
-		$billingAddress = $this->getBillingAddress();
-		
+
 		$datosComercio = $this->getDataComercial();
 		$datosOperacion = $this->getDataOperacion($customer);
-		$datosOperacion = array_merge($datosOperacion,$this->getDataControlFraudeCommon($customer, $billingAddress));
-		$datosOperacion = array_merge($datosOperacion,$this->getDataControlFraudeRetail($customer, $shippingAddress));
+          $datosOperacionBillingAddress = $this->getDataControlFraudeCommon($customer, $this->getBillingAddress());
+		$datosOperacion = array_merge($datosOperacion,$datosOperacionBillingAddress);
+          $datosOperacionShippingAddress = $this->getDataControlFraudeRetail($customer, $this->getShippingAddress());
+		$datosOperacion = array_merge($datosOperacion,$datosOperacionShippingAddress);
 		$datosOperacion = array_merge($datosOperacion,$this->getDataControlFraudeDetail($products));
 
 		return array($datosComercio, $datosOperacion);
-	}
-	
+	}	
 	protected function execSar($data) 
 	{
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - ExecSAR");
@@ -294,9 +307,10 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		$sar_response = $this->_tpConnector->sendAuthorizeRequest($data[0], $data[1]);
 		if($sar_response["StatusCode"] == 702) {
 			$this->_logger->debug("TODOPAGO - MODEL PAYMENT - RetrySAR");
-			$sar_response = $this->_tpConnector->sendAuthorizeRequest($datosComercio, $datosOperacion);
+			$sar_response = $this->_tpConnector->sendAuthorizeRequest($datosComercio, $datosOperacion); 
 		}
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - Response: " . json_encode($sar_response));
+
 		if($sar_response["StatusCode"] != -1) {
 			throw new \Exception($sar_response["StatusMessage"]);
 		}
@@ -307,16 +321,77 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 	{
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - FirstStep");
 		$this->_order = $order;
-
 		$data = $this->getPayData();
-		$res = $this->execSar($data);
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - CreateTransaction");
 		$tran = $this->_transaccion->create();
-		$tran->setData('orderid', $this->_order->getId())
-		     ->setData('requestkey',$res["RequestKey"])
-			 ->setData('publicrequestkey', $res["PublicRequestKey"])
-			 ->save();
-		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - SaveTransaction");
+    $shippingAddress = $this->getShippingAddress();
+    $billingAddress = $this->getBillingAddress();
+
+    $customer = $this->getCustomerData();
+/*    $sha1 = $this->getSha1();
+    $direccionCollection = $this->_direccion->create()
+        ->getCollection()
+        ->addFieldToFilter('sha1',['eq'=>$sha1])
+        ->addFieldToFilter('id_customer',['eq'=>$customer->getEntityId()]);
+    $arrDireccionCollection=$direccionCollection->getData();
+
+    if($this->_scopeConfig->getValue('payment/todopago/googlemaps', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1 AND empty($arrDireccionCollection[0]['billing_CSBTSTREET1'])){
+        $this->_tpConnector->setGoogleClient();
+        $googleResponse = $this->_tpConnector->getGoogleClient()->getFinalAddress();
+
+        if(empty($googleResponse['billing']['CSBTPOSTALCODE'])){
+            $googleResponse['billing']['CSBTPOSTALCODE']=$shippingAddress->getPostcode();
+        }
+        if(empty($googleResponse['shipping']['CSSTPOSTALCODE'])){
+            $googleResponse['shipping']['CSSTPOSTALCODE']=$billingAddress->getPostcode();
+        }
+
+        $direccion = $this->_direccion->create();
+        $direccion
+            ->setData('id_customer', $customer->getEntityId())
+            ->setData('sha1', $sha1)               
+            ->setData('billing_CSBTSTREET1', $googleResponse['billing']['CSBTSTREET1'])
+            ->setData('billing_CSBTSTATE', $googleResponse['billing']['CSBTSTATE'])
+            ->setData('billing_CSBTCITY', $googleResponse['billing']['CSBTCITY'])
+            ->setData('billing_CSBTCOUNTRY', $googleResponse['billing']['CSBTCOUNTRY'])
+            ->setData('billing_CSBTPOSTALCODE', $googleResponse['billing']['CSBTPOSTALCODE'])
+            ->setData('shipping_CSSTSTREET1', $googleResponse['shipping']['CSSTSTREET1'])
+            ->setData('shipping_CSSTSTATE', $googleResponse['shipping']['CSSTSTATE'])
+            ->setData('shipping_CSSTCITY', $googleResponse['shipping']['CSSTCITY'])
+            ->setData('shipping_CSSTPOSTALCODE', $googleResponse['shipping']['CSSTPOSTALCODE'])
+            ->setData('shipping_CSSTCOUNTRY', $googleResponse['shipping']['CSSTCOUNTRY'])               
+            ->save();                   
+        $this->_logger->debug("TODOPAGO - MODEL PAYMENT - Save Googlemaps - Response: ".print_r($googleResponse, true));  
+
+        $direccionCollection = $this->_direccion->create()
+            ->getCollection()
+            ->addFieldToFilter('sha1',['eq'=>$sha1])
+            ->addFieldToFilter('id_customer',['eq'=>$customer->getEntityId()]);
+        $arrDireccionGoogleCollection=$direccionCollection->getData();              
+
+    }
+    
+   if($this->_scopeConfig->getValue('payment/todopago/googlemaps', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1 AND !empty($arrDireccionCollection[0]['billing_CSBTSTREET1'])){
+        $data[1]['CSBTSTREET1']=$arrDireccionCollection[0]["billing_CSBTSTREET1"];
+        $data[1]['CSBTSTATE']=$arrDireccionCollection[0]["billing_CSBTSTATE"];
+        $data[1]['CSBTCITY']=$arrDireccionCollection[0]["billing_CSBTCITY"]; 
+        $data[1]['CSBTCOUNTRY']=$arrDireccionCollection[0]["billing_CSBTCOUNTRY"];
+        $data[1]['CSBTPOSTALCODE']=$arrDireccionCollection[0]["billing_CSBTPOSTALCODE"];
+        $data[1]['CSSTSTREET1']=$arrDireccionCollection[0]["shipping_CSSTSTREET1"];
+        $data[1]['CSSTSTATE']=$arrDireccionCollection[0]["shipping_CSSTSTATE"];
+        $data[1]['CSSTCITY']=$arrDireccionCollection[0]["shipping_CSSTCITY"];
+        $data[1]['CSSTPOSTALCODE']=$arrDireccionCollection[0]["shipping_CSSTPOSTALCODE"];
+        $data[1]['CSSTCOUNTRY']=$arrDireccionCollection[0]["shipping_CSSTCOUNTRY"];
+    }
+*/
+    $res = $this->execSar($data);
+
+    $tran->setData('orderid', $this->_order->getId())
+        ->setData('requestkey',$res["RequestKey"])
+    		->setData('publicrequestkey', $res["PublicRequestKey"])
+    		->save();
+    $this->_logger->debug("TODOPAGO - MODEL PAYMENT - SaveTransaction");
+
 		return $res;	
 	}
 	
@@ -371,9 +446,6 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - Request: " . json_encode($data));
 		$gaa_response = $this->_tpConnector->getAuthorizeAnswer($data);
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - Response: " . json_encode($gaa_response));
-		if($gaa_response["StatusCode"] != -1) {
-			throw new \Exception($gaa_response["StatusMessage"]);
-		}
 		return $gaa_response;
 	}
 	
@@ -391,6 +463,11 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		     ->setData('authorizationkey',$res["AuthorizationKey"])
 			 ->save();
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - UpdateTransaction");
+
+		if($res["StatusCode"] != -1) {
+			throw new \Exception($res["StatusMessage"]);
+		}
+
 		return $res;
 	}
 	
