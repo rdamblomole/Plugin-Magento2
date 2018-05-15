@@ -84,7 +84,8 @@ En la configuracion del plugin tambien estara la posibilidad de mostrarle al cli
 Para esto , en la configuracion se debe seleccionar YES en el campo Utilizar formulario híbrido:
 ![imagen de configuracion de formulario hibrido](https://raw.githubusercontent.com/TodoPago/imagenes/master/magento2/form_hibrido_config.jpg)
 <sub></br>Del lado del cliente el formulario se vera asi:</br></sub> 
-![imagen de formulario hibrido del lado del cliente](https://raw.githubusercontent.com/TodoPago/imagenes/master/magento/formHibrid2.png)
+![imagen de formulario hibrido del lado del cliente](https://raw.githubusercontent.com/TodoPago/imagenes/master/magento2/captura-fh-magento2-v3.1.png)
+
 
 [<sub>Volver a inicio</sub>](#inicio)
 

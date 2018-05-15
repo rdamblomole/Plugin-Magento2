@@ -93,6 +93,11 @@ class Formcustom extends \Magento\Framework\App\Action\Action
 		$block->setAmount(number_format($order->getGrandTotal(), 2, ".", ""));
 		$block->setMail($customer->getEmail());
 		$apyn = $customer->getFirstname() . " " . $customer->getLastname();
+
+        if($apyn==" "){
+            $apyn="";
+        }
+
 		$block->setNombre($apyn);
 		$block->setOrden($order->getId());
 		

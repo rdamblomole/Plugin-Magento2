@@ -9,7 +9,15 @@
     <system>
         <section id="payment">
             <group id="todopago" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>TodoPago v1.5.0</label>
+                <label>TodoPago v1.12.0</label>
+                <field id="versionupdate" translate="label" type="text" sortOrder="-1" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label></label>
+                    <comment></comment>
+                    <frontend_model>Prisma\TodoPago\Block\Adminhtml\System\Config\Versionupdate</frontend_model>
+                </field>
+
+
+
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Activo</label>
 					<comment>Activa y desactiva el módulo de pago</comment>
@@ -73,12 +81,13 @@
                     <validate>validate-digits validate-digits-range digits-range-300000-21600000</validate>
                 </field>
 
+<!--
                 <field id="googlemaps" translate="label" type="select" sortOrder="102" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Verificar domicilio con Googlemaps</label>
                     <comment>Verificar domicilio con Googlemaps</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-
+-->
 				
 				<include path="Prisma_TodoPago::system/ambiente.xml"/>
 				<include path="Prisma_TodoPago::system/estados.xml"/>

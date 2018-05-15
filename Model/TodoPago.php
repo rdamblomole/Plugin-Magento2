@@ -152,8 +152,7 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
         $payDataComercial['URL_ERROR'] = $this->_urlInterface->getBaseUrl().'todopago/payment/secondstep/id/' . $this->_order->getId();
         $payDataComercial['Merchant'] = $this->_tpConnector->getMerchant();
         $payDataComercial['Security'] = $this->_tpConnector->getSecurity();
-        $payDataComercial['EncodingMethod'] = 'XML'; 
-		
+        $payDataComercial['EncodingMethod'] = 'XML';
 		return $payDataComercial;
 	}
 	
@@ -271,7 +270,22 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
             $payDataOperacion['MAXINSTALLMENTS'] = $this->_scopeConfig->getValue('payment/todopago/cuotas_cant', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         }
 
-		return $payDataOperacion;
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+        $moduleInfo =  $objectManager->get('Magento\Framework\Module\ModuleList')->getOne('Prisma_TodoPago');
+
+        if($this->_scopeConfig->getValue('payment/todopago/hibrido', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)==1){
+           $tipo='-H';
+        }else{
+           $tipo='-E';
+        }
+        $version = $productMetadata->getVersion();
+
+        $payDataOperacion['ECOMMERCENAME'] = 'MAGENTO'; 
+        $payDataOperacion['ECOMMERCEVERSION'] = $version; 
+        $payDataOperacion['PLUGINVERSION'] = $moduleInfo['setup_version'].$tipo; 
+
+	   return $payDataOperacion;
 	}
 	
 
@@ -335,6 +349,8 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
         ->addFieldToFilter('id_customer',['eq'=>$customer->getEntityId()]);
     $arrDireccionCollection=$direccionCollection->getData();
 
+
+/*
     if($this->_scopeConfig->getValue('payment/todopago/googlemaps', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1 AND empty($arrDireccionCollection[0]['billing_CSBTSTREET1'])){
         $this->_tpConnector->setGoogleClient();
         $googleResponse = $this->_tpConnector->getGoogleClient()->getFinalAddress();
@@ -395,6 +411,10 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		return $res;	
 	}
 	
+    public function getAmount(){
+        return number_format($this->_order->getGrandTotal(), 2, ",", "");
+    }
+
 	public function getRequestKey($order = null)
 	{
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - GetRequestKey");
