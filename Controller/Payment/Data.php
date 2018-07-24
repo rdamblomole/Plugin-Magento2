@@ -115,8 +115,15 @@ class Data extends \Magento\Framework\App\Action\Action
 			$order->save();
 			$this->_logger->debug("TODOPAGO - FIRST STEP REDIRECT");
 
-			if($methodInstance->getCode() == "tpredirect") {
+			$hibrido = $this->scopeConfig->getValue('payment/todopago/hibrido', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+			if($methodInstance->getCode() == "tpredirect" ) {
 				$this->_redirect($res["URL_Request"]);
+			}elseif($hibrido==0 AND $methodInstance->getCode() == "tpbille"){
+				$url = $res["URL_Request"];
+
+				$result = $this->resultJsonFactory->create();
+				return $result->setData(['url' => $url]);
+
 			} else {
 				$url = $methodInstance->getCustomUrl();
 

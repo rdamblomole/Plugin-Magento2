@@ -20,4 +20,11 @@
             <allow_multiple_address>1</allow_multiple_address>
         </method>
     </methods>
+
+    <methods>
+        <method name="tpbille">
+            <allow_multiple_address>1</allow_multiple_address>
+        </method>
+    </methods>
+
 </payment>

@@ -82,6 +82,10 @@ class Formcustom extends \Magento\Framework\App\Action\Action
 		$method = $order->getPayment()->getMethod();
 		$methodInstance = $this->_paymentHelper->getMethodInstance($method);
 
+        $codeMethod = $methodInstance->getCode();
+
+
+
 		$page_object = $this->pageFactory->create();
 		$block = $page_object->getLayout()->getBlock('todopago_formcustom');
 		
@@ -91,7 +95,9 @@ class Formcustom extends \Magento\Framework\App\Action\Action
 		$block->setRequestKey($methodInstance->getPublicRequestKey($order));
 		$block->setMerchant($methodInstance->getMerchant());
 		$block->setAmount(number_format($order->getGrandTotal(), 2, ".", ""));
-		$block->setMail($customer->getEmail());
+        $block->setMail($customer->getEmail());
+        $block->setcodeMethod($codeMethod);
+
 		$apyn = $customer->getFirstname() . " " . $customer->getLastname();
 
         if($apyn==" "){

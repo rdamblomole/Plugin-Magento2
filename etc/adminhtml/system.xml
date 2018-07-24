@@ -9,12 +9,20 @@
     <system>
         <section id="payment">
             <group id="todopago" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>TodoPago v1.12.0</label>
+                <label>TodoPago v1.13.0</label>
                 <field id="versionupdate" translate="label" type="text" sortOrder="-1" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label></label>
                     <comment></comment>
                     <frontend_model>Prisma\TodoPago\Block\Adminhtml\System\Config\Versionupdate</frontend_model>
                 </field>
+
+                    <field id="bannerbille" translate="label" type="text" sortOrder="-1" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Billetera en checkout</label>
+                    <comment>Seleccione el banner que desea mostrar para Billetera</comment>
+                    <frontend_model>Prisma\TodoPago\Block\Adminhtml\System\Config\Bannerbille</frontend_model>
+                </field>
+
+
 
 
 

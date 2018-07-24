@@ -62,7 +62,7 @@ input, select {
 }
 
 .tp_btn {
-    width: 75%;
+    /*width: 75%;*/
     padding: 7px 50px;
     font-weight: bold;
     border: 0;

@@ -16,7 +16,7 @@ endif;
 </div>
 
 <div class="tp_wrapper" id="tpForm">
-    <section class="tp-total tp-flex">
+    <section class="tp-total tp-flex header_info">
         <div>
             <strong>Total a pagar $<?php echo $this->getAmount(); ?></strong>
         </div>
@@ -32,7 +32,7 @@ endif;
         </div>
         <div class="tp-flex-grow-1 tp-bloque-span btnPagarConBilleteraBox">
             <button id="btn_billetera" title="Pagar con Billetera" class="tp_btn tp_btn_sm text_size_billetera">
-                Pagar con Billetera
+                Iniciar Sesión
             </button>
         </div>
     </section>
@@ -394,6 +394,7 @@ endif;
         }
         script.src = url;
         document.getElementsByTagName("head")[0].appendChild(script);
+
     }
 
     function loader() {
@@ -411,7 +412,24 @@ endif;
         }, 2000);
 
         setTimeout(function () {
-            tpformJquery("#tpForm").fadeTo('fast', 1);
+            var frame_mode = "true";
+            console.log('setTimeout setTimeout setTimeout');
+
+            tpformJquery("#btn_billetera").html("Iniciar Sesión");
+            
+            //Billetera, aprieba botón para abrir popup de billetera
+            var codeMethod = "<?php echo $this->getcodeMethod(); ?>";
+            console.log('codeMethod = ' + codeMethod);
+            if(codeMethod=="tpbille"){
+                if(frame_mode == "true"){
+                    getFormWAlletMode();
+                }else{
+                    getFormMode();
+                } 
+            }else{
+
+                tpformJquery("#tpForm").fadeTo('fast', 1);
+            }        
         }, 2200);
     }
 
@@ -642,4 +660,23 @@ endif;
             tpformJquery('#emailLbl').html('');
         }
     }
+
+
+        function getFormMode() {
+            console.log('getFormMode function');
+
+            tpformJquery("#tpForm").fadeTo('fast', 1);
+            tpformJquery(".header_info").fadeTo('fast', 1);
+        }
+
+        function getFormWAlletMode() {
+            console.log('getFormWAlletMode function');
+
+            tpformJquery("#tpForm").fadeTo('fast', 1);
+            tpformJquery(".header_info").fadeTo('fast', 1);
+            tpformJquery('#btn_billetera').click();
+            tpformJquery('.billetera_tp').hide();
+            
+
+        }    
 </script>

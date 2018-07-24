@@ -81,6 +81,8 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		
 		$hibrido = (bool)(int)$this->getConfigData('hibrido', $storeId); 
 		if($todopago_active == true) {
+            if($this->_code=="tpbille") return true;
+
 			if($hibrido == $this->hibrido_flag) return true;
 		}
 		return false;
@@ -274,11 +276,18 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
         $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
         $moduleInfo =  $objectManager->get('Magento\Framework\Module\ModuleList')->getOne('Prisma_TodoPago');
 
+        //Busca código del método de pago
+        /*
+        $payment = $this->_order->getPayment();
+        $method = $payment->getMethodInstance();
+        $methodTitle = $method->getCode();
+        */
         if($this->_scopeConfig->getValue('payment/todopago/hibrido', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)==1){
            $tipo='-H';
         }else{
            $tipo='-E';
         }
+
         $version = $productMetadata->getVersion();
 
         $payDataOperacion['ECOMMERCENAME'] = 'MAGENTO'; 
@@ -321,7 +330,7 @@ class TodoPago extends \Magento\Payment\Model\Method\AbstractMethod
 		$sar_response = $this->_tpConnector->sendAuthorizeRequest($data[0], $data[1]);
 		if($sar_response["StatusCode"] == 702) {
 			$this->_logger->debug("TODOPAGO - MODEL PAYMENT - RetrySAR");
-			$sar_response = $this->_tpConnector->sendAuthorizeRequest($datosComercio, $datosOperacion); 
+			$sar_response = $this->_tpConnector->sendAuthorizeRequest($data[0], $data[1]); 
 		}
 		$this->_logger->debug("TODOPAGO - MODEL PAYMENT - Response: " . json_encode($sar_response));
 

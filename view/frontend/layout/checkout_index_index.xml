@@ -25,9 +25,29 @@
 																		<item name="tphibrido" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
+
                                                                     </item>
                                                                 </item>
+
+
+                                                                <item name="todopago-bille" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">Prisma_TodoPago/js/view/payment/todopagobille</item>
+                                                                    <item name="methods" xsi:type="array">
+                                                                        <item name="tpbille" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                        </item>
+                                                                    </item>
+                                                                </item>
+
+
+
                                                             </item>
+ 
+
+
+
+
+
                                                         </item>
                                                     </item>
                                                 </item>

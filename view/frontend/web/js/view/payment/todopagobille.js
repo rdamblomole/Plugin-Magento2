@@ -15,18 +15,11 @@ define(
     ) {
         'use strict';
         rendererList.push(
-            {
-                type: 'tpredirect',
-                component: 'Prisma_TodoPago/js/view/payment/method-renderer/tpredirect-method'
-            },
-            {
-                type: 'tphibrido',
-                component: 'Prisma_TodoPago/js/view/payment/method-renderer/tphibrido-method'
-            },
+
             {
                 type: 'tpbille',
                 component: 'Prisma_TodoPago/js/view/payment/method-renderer/tpbille-method'
-            },
+            }
         );
         /** Add view logic here if needed */
         return Component.extend({});
